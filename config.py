@@ -22,3 +22,9 @@ PLANS = {
     "Pro": "with_aleria_pro"
 }
 
+VALID_BODY_CREATE = {
+    "emailAddress": TEST_EMAIL_CREATE,
+    "planId": PLANS["Pro"],
+    "quantity": 5,
+    "accountId": "null",
+}
