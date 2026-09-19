@@ -6,7 +6,25 @@ from api.base import BaseApiStage
 
 class TestSubscriptionQuantity:
 
-    def test_quantity_check(self,api,  subscription):
+    @pytest.mark.parametrize(
+        "method, expected_status",
+        [
+            ("HEAD", 405),
+            ("OPTIONS", 405),
+            ("PUT", 405),
+            ("DELETE", 405),
+            ("PATCH", 405),
+            ("GET", 200),
+       ],
+    )
+    def test_get_method_validation(self, method, api, subscription,expected_status):
+        sub_id = subscription["subscriptionID"]
+
+        response = api.get_subscription(sub_id, method)
+        assert response.status_code == expected_status, (f"Expecting {expected_status}, got: {response.status_code}")
+
+
+    def test_quantity_check(self, subscription):
         assert subscription["quantity"] > 0
 
 

@@ -22,8 +22,9 @@ class BaseApiStage:
         return f"{self.base_url}/etisalat/v1/{path}"
 
 
-    def create_sub(self, email, plan_id, quantity, accountId="null"):
-        return self.session.post(
+    def create_sub(self, email, plan_id, quantity, accountId="null", method="POST"):
+        return self.session.request(
+            method,
             self._url("/subscriptions"),
             json={
                 "emailAddress": email,
@@ -43,15 +44,17 @@ class BaseApiStage:
         )
 
 
-    def get_subscription(self, sub_id):
-        return self.session.get(
+    def get_subscription(self, sub_id, method="GET"):
+        return self.session.request(
+            method,
             self._url(f"/subscriptions/{sub_id}"),
             timeout=self.timeout
             )
 
 
-    def change_quantity(self, sub_id, quantity, is_forse=True):
-        return self.session.post(
+    def change_quantity(self, sub_id, quantity, is_forse=True,method="POST"):
+        return self.session.request(
+            method,
             self._url(f"/subscriptions/{sub_id}/quantity"),
             json={
                 "quantity": quantity,
@@ -60,8 +63,9 @@ class BaseApiStage:
         )
 
 
-    def cancel_sub(self, sub_id, reason="cancel"):
-        return self.session.post(
+    def cancel_sub(self, sub_id, reason="cancel",method="POST"):
+        return self.session.request(
+            method,
             self._url(f"subscriptions/{sub_id}/cancel"),
             json={
                 "reason": reason
