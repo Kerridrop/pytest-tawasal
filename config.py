@@ -28,3 +28,17 @@ VALID_BODY_CREATE = {
     "quantity": 5,
     "accountId": "null",
 }
+
+INVALID_VALUES = [
+    ("emailAddress", "not-an-email", 400),
+    ("emailAddress", "", 400),
+    ("emailAddress", 123, 400),
+    ("planId", "nonexistent_plan", 400),
+    ("planId", "", 400),
+    ("planId", 123, 400),
+    ("quantity", 0, 409),
+    ("quantity", -1, 409),
+    ("quantity", 1.5, 400),
+    ("quantity", "five", 400),
+    ("accountId", 123, 400),
+]
