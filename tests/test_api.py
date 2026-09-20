@@ -21,7 +21,8 @@ class TestSubscriptionQuantity:
         sub_id = subscription["subscriptionID"]
 
         response = api.get_subscription(sub_id, method)
-        assert response.status_code == expected_status, (f"Expecting {expected_status}, got: {response.status_code}")
+        assert response.status_code == expected_status, \
+            (f"Expecting {expected_status}, got: {response.status_code}")
 
 
     def test_quantity_check(self, subscription):
@@ -33,12 +34,32 @@ class TestSubscriptionQuantity:
 
         response = api.change_quantity(sub_id, CHANGE_QUANTITY)
 
-        assert response.status_code == 200, f"Change error: {response.text[:50]}"
+        assert response.status_code == 200, \
+            f"Change error: {response.text[:50]}"
         assert response.json()["allowed"] is True
 
         check = api.get_subscription(sub_id)
         assert check.status_code == 200, f"Get info error: {check.text[:50]}"
-        assert check.json()["quantity"] == CHANGE_QUANTITY, f"Not applied: {check.text[:50]}"
+        assert check.json()["quantity"] == CHANGE_QUANTITY, \
+            f"Not applied: {check.text[:50]}"
+
+    def test_validate_sub_methods(self, api):
+        response = api.validate_sub(email=TEST_EMAIL_CREATE, method="POST")
+
+        data = response.json()
+        assert data["used"] is False, \
+            f"Subscription is used without activating, got {data["used"]}"
+
+
+    def test_change_plan(self, api, subscription):
+        sub_id = subscription["subscriptionID"]
+
+        response = api.change_plan(sub_id=sub_id, plan=PLANS["Base"], method="POST")
+
+        assert response.status_code == 200, \
+            f"Changing error: {response.status_code}, expecting 200"
+        assert response.text == "", \
+            f"Got different body {response.text[:50]}"
 
 
     @pytest.mark.parametrize("method, expected_status",[
@@ -99,6 +120,25 @@ class TestSubscriptionQuantity:
             f"{method}: expecting {expected_status}, got {response.status_code}"
 
 
+    @pytest.mark.parametrize("method, expected_status",[
+            ("HEAD", 405),
+            ("OPTIONS", 405),
+            ("PUT", 405),
+            ("DELETE", 405),
+            ("PATCH", 405),
+            pytest.param(
+                "GET", 405,
+                marks=pytest.mark.xfail(
+                reason="Wrong status 200 with HTML body")
+            )
+        ]
+    )
+    def test_validate_sub_methods(self, api, method, expected_status):
+        response = api.validate_sub(email=TEST_EMAIL_CREATE, method=method)
+        assert response.status_code == expected_status, \
+            f"{method}: expecting {expected_status}, got {response.status_code}"
+
+
 # === negative scenatios ===
 
 @pytest.mark.parametrize("field",[
@@ -127,4 +167,5 @@ def test_create_without_required_field(api, field, case):
         body[field] = None
 
     response = api.create_sub_raw(**body)
-    assert response.status_code == 400, f"Field{field}({case}: expecting 400, got {response.status_code})"
+    assert response.status_code == 400, \
+        f"Field{field}({case}: expecting 400, got {response.status_code})"
