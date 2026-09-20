@@ -72,3 +72,25 @@ class BaseApiStage:
             },
             timeout=self.timeout,
         )
+
+
+    def validate_sub(self, email, method="POST"):
+        return self.session.request(
+            method,
+            self._url(f"/emails/validate"),
+            json={
+                "emailAddress": email,
+            },
+            timeout=self.timeout
+        )
+
+
+    def change_plan(self, sub_id, plan, method="POST"):
+        return self.session.request(
+            method,
+            self._url(f"/subscriptions/{sub_id}/plan"),
+            json={
+                "planId": plan,
+            },
+            timeout=self.timeout,
+        )
