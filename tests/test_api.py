@@ -156,7 +156,7 @@ def test_onboarding_invalid_value(api, field, value, expected):
         api.cancel_sub(response.json()["subscriptionID"])
 
     assert response.status_code == expected, \
-        f"{field}={value!r}: expected 400, got {response.status_code}: {response.text[:50]}"
+        f"{field}={value!r}: expected {expected}, got {response.status_code}: {response.text[:50]}"
 
 
 def test_nonexisting_sub(api):
@@ -179,7 +179,7 @@ def test_double_cancel(api):
 
     deletesecond = api.cancel_sub(sub_id)
     assert deletesecond.status_code == 404, \
-        f"{deletesecond.status_code} gor for double deletion, expecting 404"      
+        f"{deletesecond.status_code} got for double deletion, expecting 404"      
 
         
 
