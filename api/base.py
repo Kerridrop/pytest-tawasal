@@ -6,16 +6,19 @@ from config import STAGE_AUTH_TOKEN, STAGE_URL
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
-class BaseApiStage:
-    def __init__(self):
+class ApiClient:
+    def __init__(self, token=None):
         self.base_url = STAGE_URL
         self.timeout = 5
         self.session = requests.Session()
         self.session.verify = False
         self.session.headers.update({
-            "Authorization": STAGE_AUTH_TOKEN,
             "Content-type": "application/json",
-        })
+            })
+        if token is not None:
+            self.session.headers.update({
+            "Authorization": token
+            })
 
 
     def _url(self, path):

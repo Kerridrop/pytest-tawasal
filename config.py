@@ -42,3 +42,10 @@ INVALID_VALUES = [
     ("quantity", "five", 400),
     ("accountId", 123, 400),
 ]
+
+AUTH_CASES = [
+    ("wrongapikey", 403),
+    ("123456", 403),
+    ("", 401),
+    (None, 401),
+]
