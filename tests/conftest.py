@@ -1,12 +1,12 @@
 import pytest
 
 from config import STAGE_URL, STAGE_AUTH_TOKEN, PAYLOAD1, TEST_EMAIL_CREATE, PLANS
-from api.base import BaseApiStage
+from api.base import ApiClient
 
 
 @pytest.fixture(scope="session")
 def api():
-    return BaseApiStage()
+    return ApiClient(token=STAGE_AUTH_TOKEN)
 
 
 @pytest.fixture(scope="class")

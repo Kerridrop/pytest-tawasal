@@ -1,7 +1,7 @@
 import pytest
 
-from config import CHANGE_QUANTITY, TEST_EMAIL_CREATE, PLANS, VALID_BODY_CREATE, INVALID_VALUES
-from api.base import BaseApiStage
+from config import CHANGE_QUANTITY, TEST_EMAIL_CREATE, PLANS, VALID_BODY_CREATE, INVALID_VALUES, AUTH_CASES
+from api.base import ApiClient
 
 
 class TestSubscriptionQuantity:
@@ -140,7 +140,7 @@ class TestMethodValidation:
 
         response = api.get_subscription(sub_id, method)
         assert response.status_code == expected_status, \
-            (f"Expecting {expected_status}, got: {response.status_code}")        
+            (f"Expecting {expected_status}, got: {response.status_code}")
 
 
 @pytest.mark.parametrize(
@@ -211,3 +211,16 @@ def test_create_without_required_field(api, field, case):
     response = api.create_sub_raw(**body)
     assert response.status_code == 400, \
         f"Field{field}({case}: expecting 400, got {response.status_code})"
+
+class TestAuth:
+    @pytest.mark.parametrize(
+        "token, expected",
+        AUTH_CASES,
+        ids=[f"token={token!r}" for token, _ in AUTH_CASES]
+    )
+    def test_without_auth(self, subscription, token, expected):
+        client = ApiClient(token=token)
+
+        response = client.get_subscription(subscription["subscriptionID"])
+        assert response.status_code == expected, \
+        f"{token!r}: expected {expected}, got {response.status_code}: {response.text[:100]}"
